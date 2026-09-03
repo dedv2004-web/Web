@@ -1,0 +1,251 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Partido Fútbol 7 - Convocatoria Activa</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-slate-100 text-slate-800 font-sans pb-12">
+
+  <!-- Header -->
+  <header class="bg-emerald-800 text-white py-8 shadow-lg">
+    <div class="max-w-4xl mx-auto px-4">
+      <div class="flex flex-wrap justify-between items-center gap-4">
+        <div>
+          <span class="bg-emerald-500 text-emerald-950 font-extrabold text-xs px-3 py-1 rounded-full uppercase tracking-wider">
+            Convocatoria Abierta
+          </span>
+          <h1 class="text-3xl font-black mt-2">⚽ Gran Partido Fútbol 7</h1>
+          <p class="text-emerald-100 text-sm mt-1">
+            <i class="fa-solid fa-location-dot mr-1"></i> Cancha Don Bosco • 
+            <i class="fa-solid fa-calendar-day mx-1"></i> Viernes 12 de Octubre, 20:00 hrs
+          </p>
+        </div>
+        <div class="bg-emerald-900/80 p-4 rounded-xl border border-emerald-600 text-center">
+          <p class="text-xs text-emerald-200 uppercase font-semibold">Cuota por Jugador</p>
+          <p class="text-2xl font-black text-amber-400">$5.000</p>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-4xl mx-auto px-4 mt-8">
+
+    <!-- Indicador de Progreso -->
+    <section class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200 mb-8">
+      <div class="flex justify-between items-center mb-3">
+        <div>
+          <h2 class="font-bold text-slate-800">Estado de Confirmación de Cuotas</h2>
+          <p class="text-xs text-slate-500">Se requiere el pago verificado de los 14 jugadores para cerrar la cancha.</p>
+        </div>
+        <span id="counterText" class="text-xl font-black text-emerald-600 bg-emerald-50 px-4 py-1.5 rounded-lg border border-emerald-200">
+          0 / 14 Pagados
+        </span>
+      </div>
+      <div class="w-full bg-slate-200 rounded-full h-3.5 overflow-hidden">
+        <div id="progressBar" class="bg-emerald-500 h-3.5 rounded-full transition-all duration-500" style="width: 0%;"></div>
+      </div>
+    </section>
+
+    <!-- Formación de Equipos (7 vs 7) -->
+    <div class="grid md:grid-cols-2 gap-6 mb-8">
+      
+      <!-- EQUIPO A -->
+      <div class="bg-white rounded-2xl p-5 shadow-sm border-t-4 border-blue-600">
+        <div class="flex justify-between items-center mb-4">
+          <h3 class="font-bold text-blue-950 text-lg flex items-center">
+            <i class="fa-solid fa-shirt text-blue-600 mr-2"></i> Equipo A
+          </h3>
+          <span id="countTeamA" class="text-xs font-semibold text-slate-500 bg-slate-100 px-2.5 py-1 rounded-full">0/7 Confirmados</span>
+        </div>
+        <ul id="listTeamA" class="space-y-2.5 text-sm">
+          <!-- Dinámico -->
+        </ul>
+      </div>
+
+      <!-- EQUIPO B -->
+      <div class="bg-white rounded-2xl p-5 shadow-sm border-t-4 border-red-600">
+        <div class="flex justify-between items-center mb-4">
+          <h3 class="font-bold text-red-950 text-lg flex items-center">
+            <i class="fa-solid fa-shirt text-red-600 mr-2"></i> Equipo B
+          </h3>
+          <span id="countTeamB" class="text-xs font-semibold text-slate-500 bg-slate-100 px-2.5 py-1 rounded-full">0/7 Confirmados</span>
+        </div>
+        <ul id="listTeamB" class="space-y-2.5 text-sm">
+          <!-- Dinámico -->
+        </ul>
+      </div>
+
+    </div>
+
+    <!-- Botón para Inscribirse -->
+    <div class="text-center">
+      <button onclick="toggleModal()" class="w-full md:w-auto bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-lg py-4 px-10 rounded-2xl shadow-lg transition-all transform active:scale-95">
+        <i class="fa-solid fa-user-plus mr-2"></i> Inscribirme y Subir Comprobante
+      </button>
+    </div>
+
+  </main>
+
+  <!-- MODAL -->
+  <div id="paymentModal" class="fixed inset-0 bg-slate-900/60 hidden flex items-center justify-center p-4 z-50 backdrop-blur-sm">
+    <div class="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl relative max-h-[90vh] overflow-y-auto">
+      
+      <button onclick="toggleModal()" class="absolute top-5 right-5 text-slate-400 hover:text-slate-600">
+        <i class="fa-solid fa-xmark text-2xl"></i>
+      </button>
+
+      <h3 class="text-2xl font-black text-slate-900 mb-1">Inscripción al Partido</h3>
+      <p class="text-sm text-slate-600 mb-6">Ingresa tus datos para sumarte a la lista.</p>
+
+      <!-- Datos Bancarios -->
+      <div class="bg-emerald-50 border border-emerald-200 rounded-2xl p-4 text-xs mb-6 text-emerald-950 space-y-1">
+        <p class="font-bold text-sm text-emerald-900 mb-1"><i class="fa-solid fa-university mr-1"></i> Cuenta para Transferir ($5.000):</p>
+        <p><strong>Banco:</strong> Banco Estado / Cuenta RUT</p>
+        <p><strong>RUT:</strong> 12.345.678-9</p>
+        <p><strong>Titular:</strong> Organización Canchas Fut7</p>
+      </div>
+
+      <!-- Formulario -->
+      <form id="playerForm" onsubmit="registerPlayer(event)" class="space-y-4">
+        <div>
+          <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Nombre Completo</label>
+          <input type="text" id="fullName" required placeholder="Ej: Juan Pérez" 
+                 class="w-full px-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:outline-none text-sm" />
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Teléfono / WhatsApp</label>
+            <input type="tel" id="phone" required placeholder="+56 9 1234 5678" 
+                   class="w-full px-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:outline-none text-sm" />
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Equipo</label>
+            <select id="teamSelect" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:outline-none text-sm">
+              <option value="TEAM_A">Equipo A</option>
+              <option value="TEAM_B">Equipo B</option>
+            </select>
+          </div>
+        </div>
+
+        <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3.5 rounded-xl shadow-lg text-sm transition-all mt-2">
+          Registrar e Informar Pago
+        </button>
+      </form>
+
+    </div>
+  </div>
+
+  <script>
+    // Inicializar datos en memoria del navegador
+    let players = JSON.parse(localStorage.getItem('fut7_players')) || [
+      { name: 'Carlos Mendoza', team: 'TEAM_A', status: 'confirmed' },
+      { name: 'Andrés Pérez', team: 'TEAM_A', status: 'pending' },
+      { name: 'Matías Rojas', team: 'TEAM_B', status: 'confirmed' }
+    ];
+
+    function toggleModal() {
+      document.getElementById('paymentModal').classList.toggle('hidden');
+    }
+
+    function renderUI() {
+      const listA = document.getElementById('listTeamA');
+      const listB = document.getElementById('listTeamB');
+      
+      listA.innerHTML = '';
+      listB.innerHTML = '';
+
+      let countA = 0;
+      let countB = 0;
+      let totalConfirmed = 0;
+
+      // Filtrar y pintar Equipo A
+      const teamAPlayers = players.filter(p => p.team === 'TEAM_A');
+      teamAPlayers.forEach((p, index) => {
+        if (p.status === 'confirmed') totalConfirmed++;
+        if (p.status !== 'empty') countA++;
+        
+        let badge = p.status === 'confirmed' 
+          ? `<span class="text-xs bg-emerald-100 text-emerald-800 px-2.5 py-1 rounded-md font-bold"><i class="fa-solid fa-check mr-1"></i>Confirmado</span>`
+          : `<span class="text-xs bg-amber-200 text-amber-900 px-2.5 py-1 rounded-md font-bold"><i class="fa-solid fa-clock mr-1"></i>Pendiente</span>`;
+        
+        listA.innerHTML += `
+          <li class="flex justify-between items-center p-2.5 bg-slate-50 rounded-xl">
+            <span class="font-medium text-slate-700">${index + 1}. ${p.name}</span>
+            ${badge}
+          </li>`;
+      });
+
+      // Completar cupos vacíos Equipo A hasta 7
+      for(let i = teamAPlayers.length; i < 7; i++) {
+        listA.innerHTML += `
+          <li class="flex justify-between items-center p-2.5 bg-slate-50 rounded-xl text-slate-400 border border-dashed border-slate-200">
+            <span>${i + 1}. Cupo disponible</span>
+            <span class="text-xs text-slate-400">Libre</span>
+          </li>`;
+      }
+
+      // Filtrar y pintar Equipo B
+      const teamBPlayers = players.filter(p => p.team === 'TEAM_B');
+      teamBPlayers.forEach((p, index) => {
+        if (p.status === 'confirmed') totalConfirmed++;
+        if (p.status !== 'empty') countB++;
+        
+        let badge = p.status === 'confirmed' 
+          ? `<span class="text-xs bg-emerald-100 text-emerald-800 px-2.5 py-1 rounded-md font-bold"><i class="fa-solid fa-check mr-1"></i>Confirmado</span>`
+          : `<span class="text-xs bg-amber-200 text-amber-900 px-2.5 py-1 rounded-md font-bold"><i class="fa-solid fa-clock mr-1"></i>Pendiente</span>`;
+        
+        listB.innerHTML += `
+          <li class="flex justify-between items-center p-2.5 bg-slate-50 rounded-xl">
+            <span class="font-medium text-slate-700">${index + 1}. ${p.name}</span>
+            ${badge}
+          </li>`;
+      });
+
+      // Completar cupos vacíos Equipo B hasta 7
+      for(let i = teamBPlayers.length; i < 7; i++) {
+        listB.innerHTML += `
+          <li class="flex justify-between items-center p-2.5 bg-slate-50 rounded-xl text-slate-400 border border-dashed border-slate-200">
+            <span>${i + 1}. Cupo disponible</span>
+            <span class="text-xs text-slate-400">Libre</span>
+          </li>`;
+      }
+
+      // Actualizar contadores y barra de progreso
+      document.getElementById('countTeamA').innerText = `${countA}/7 Confirmados`;
+      document.getElementById('countTeamB').innerText = `${countB}/7 Confirmados`;
+      document.getElementById('counterText').innerText = `${totalConfirmed} / 14 Pagados`;
+      
+      let percentage = (totalConfirmed / 14) * 100;
+      document.getElementById('progressBar').style.width = `${percentage}%`;
+    }
+
+    function registerPlayer(event) {
+      event.preventDefault();
+      const name = document.getElementById('fullName').value;
+      const phone = document.getElementById('phone').value;
+      const team = document.getElementById('teamSelect').value;
+
+      // Agregar jugador con estado pendiente de validación
+      players.push({ name, team, status: 'pending' });
+      localStorage.setItem('fut7_players', JSON.stringify(players));
+
+      renderUI();
+      toggleModal();
+      document.getElementById('playerForm').reset();
+
+      // Enviar un mensaje automático de WhatsApp al administrador con los datos
+      const adminPhone = "56912345678"; // Reemplaza con tu número de WhatsApp real
+      const message = `Hola! Me acabo de inscribir al partido en el ${team === 'TEAM_A' ? 'Equipo A' : 'Equipo B'}. Mi nombre es ${name}. Adjunto mi comprobante de transferencia.`;
+      window.open(`https://api.whatsapp.com/send?phone=${adminPhone}&text=${encodeURIComponent(message)}`, '_blank');
+    }
+
+    // Cargar al iniciar
+    renderUI();
+  </script>
+</body>
+</html>
+

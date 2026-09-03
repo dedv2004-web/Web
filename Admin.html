@@ -1,0 +1,182 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Panel de Administración - Fútbol 7</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-slate-100 text-slate-800 font-sans pb-12">
+
+  <!-- Header Admin -->
+  <header class="bg-slate-900 text-white py-6 shadow-lg">
+    <div class="max-w-4xl mx-auto px-4 flex justify-between items-center">
+      <div>
+        <span class="bg-amber-500 text-slate-950 font-extrabold text-xs px-3 py-1 rounded-full uppercase tracking-wider">
+          Panel de Control
+        </span>
+        <h1 class="text-2xl font-black mt-2">⚙️ Administración del Partido</h1>
+      </div>
+      <a href="index.html" target="_blank" class="bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold py-2.5 px-4 rounded-xl border border-slate-700 transition">
+        <i class="fa-solid fa-eye mr-1"></i> Ver Página Pública
+      </a>
+    </div>
+  </header>
+
+  <main class="max-w-4xl mx-auto px-4 mt-8 space-y-8">
+
+    <!-- Sección 1: Configurar / Crear Evento -->
+    <section class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200">
+      <h2 class="font-bold text-slate-900 text-lg mb-4 flex items-center">
+        <i class="fa-solid fa-pen-to-square text-emerald-600 mr-2"></i> Configurar Detalles del Partido
+      </h2>
+      <form id="eventForm" onsubmit="saveEvent(event)" class="space-y-4">
+        <div class="grid md:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Nombre del Partido / Título</label>
+            <input type="text" id="eventTitle" required class="w-full px-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none" />
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Cancha / Ubicación</label>
+            <input type="text" id="eventLocation" required class="w-full px-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none" />
+          </div>
+        </div>
+        <div class="grid md:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Fecha y Hora</label>
+            <input type="text" id="eventDate" required class="w-full px-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none" />
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Cuota por Jugador ($)</label>
+            <input type="text" id="eventPrice" required class="w-full px-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none" />
+          </div>
+        </div>
+        <div class="flex gap-3 pt-2">
+          <button type="submit" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 px-6 rounded-xl shadow text-sm transition">
+            Actualizar Datos del Evento
+          </button>
+          <button type="button" onclick="deleteEvent()" class="bg-red-50 hover:bg-red-100 text-red-600 font-bold py-2.5 px-6 rounded-xl border border-red-200 text-sm transition">
+            <i class="fa-solid fa-trash mr-1"></i> Eliminar Evento / Reiniciar Todo
+          </button>
+        </div>
+      </form>
+    </section>
+
+    <!-- Sección 2: Gestión de Jugadores Inscritos -->
+    <section class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200">
+      <h2 class="font-bold text-slate-900 text-lg mb-1 flex items-center">
+        <i class="fa-solid fa-users text-emerald-600 mr-2"></i> Listado de Inscritos y Validación de Pagos
+      </h2>
+      <p class="text-xs text-slate-500 mb-6">Cambia el estatus a "Confirmado" una vez verifiques la transferencia bancaria.</p>
+
+      <div class="overflow-x-auto">
+        <table class="w-full text-left border-collapse text-sm">
+          <thead>
+            <tr class="border-b border-slate-200 text-slate-400 font-semibold text-xs uppercase bg-slate-50">
+              <th class="p-3">Jugador</th>
+              <th class="p-3">Equipo</th>
+              <th class="p-3">Estatus actual</th>
+              <th class="p-3 text-right">Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="adminPlayerTable" class="divide-y divide-slate-100">
+            <!-- Dinámico -->
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+  </main>
+
+  <script>
+    // Cargar datos locales comunes
+    let eventData = JSON.parse(localStorage.getItem('fut7_event')) || {
+      title: '⚽ Gran Partido Fútbol 7',
+      location: 'Cancha Don Bosco',
+      date: 'Viernes 12 de Octubre, 20:00 hrs',
+      price: '$5.000'
+    };
+
+    let players = JSON.parse(localStorage.getItem('fut7_players')) || [
+      { id: 1, name: 'Carlos Mendoza', team: 'TEAM_A', status: 'confirmed' },
+      { id: 2, name: 'Andrés Pérez', team: 'TEAM_A', status: 'pending' },
+      { id: 3, name: 'Matías Rojas', team: 'TEAM_B', status: 'confirmed' }
+    ];
+
+    // Rellenar formulario del evento al cargar
+    document.getElementById('eventTitle').value = eventData.title;
+    document.getElementById('eventLocation').value = eventData.location;
+    document.getElementById('eventDate').value = eventData.date;
+    document.getElementById('eventPrice').value = eventData.price;
+
+    function saveEvent(e) {
+      e.preventDefault();
+      eventData = {
+        title: document.getElementById('eventTitle').value,
+        location: document.getElementById('eventLocation').value,
+        date: document.getElementById('eventDate').value,
+        price: document.getElementById('eventPrice').value
+      };
+      localStorage.setItem('fut7_event', JSON.stringify(eventData));
+      alert('¡Detalles del evento actualizados con éxito!');
+    }
+
+    function deleteEvent() {
+      if (confirm('¿Estás seguro de eliminar el evento y vaciar todas las inscripciones?')) {
+        localStorage.removeItem('fut7_event');
+        localStorage.removeItem('fut7_players');
+        location.reload();
+      }
+    }
+
+    function renderAdminTable() {
+      const tbody = document.getElementById('adminPlayerTable');
+      tbody.innerHTML = '';
+
+      if (players.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="4" class="p-6 text-center text-slate-400">No hay jugadores inscritos todavía.</td></tr>`;
+        return;
+      }
+
+      players.forEach((p, index) => {
+        let badge = p.status === 'confirmed'
+          ? `<span class="bg-emerald-100 text-emerald-800 text-xs font-bold px-2.5 py-1 rounded-md">Confirmado</span>`
+          : `<span class="bg-amber-100 text-amber-800 text-xs font-bold px-2.5 py-1 rounded-md">Pendiente</span>`;
+
+        let actionBtn = p.status === 'pending'
+          ? `<button onclick="changeStatus(${index}, 'confirmed')" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-3 py-1.5 rounded-lg transition mr-2">Aprobar Pago</button>`
+          : `<button onclick="changeStatus(${index}, 'pending')" class="bg-amber-500 hover:bg-amber-600 text-white text-xs font-bold px-3 py-1.5 rounded-lg transition mr-2">Marcar Pendiente</button>`;
+
+        tbody.innerHTML += `
+          <tr class="hover:bg-slate-50">
+            <td class="p-3 font-medium text-slate-700">${p.name}</td>
+            <td class="p-3 font-semibold text-slate-600">${p.team === 'TEAM_A' ? 'Equipo A' : 'Equipo B'}</td>
+            <td class="p-3">${badge}</td>
+            <td class="p-3 text-right">
+              ${actionBtn}
+              <button onclick="deletePlayer(${index})" class="bg-red-50 hover:bg-red-100 text-red-600 p-2 rounded-lg transition"><i class="fa-solid fa-trash"></i></button>
+            </td>
+          </tr>`;
+      });
+    }
+
+    function changeStatus(index, newStatus) {
+      players[index].status = newStatus;
+      localStorage.setItem('fut7_players', JSON.stringify(players));
+      renderAdminTable();
+    }
+
+    function deletePlayer(index) {
+      if (confirm('¿Deseas eliminar a este jugador de la convocatoria?')) {
+        players.splice(index, 1);
+        localStorage.setItem('fut7_players', JSON.stringify(players));
+        renderAdminTable();
+      }
+    }
+
+    renderAdminTable();
+  </script>
+</body>
+</html>
+
