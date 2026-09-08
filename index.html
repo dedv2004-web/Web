@@ -88,7 +88,7 @@
       <h3 class="font-bold text-slate-900 text-lg mb-1 flex items-center">
         <i class="fa-solid fa-hourglass-half text-amber-600 mr-2"></i> Lista de Espera
       </h3>
-      <p class="text-xs text-slate-500 mb-4">Los equipos titulares están llenos. Si algún cupo se libera, el administrador subirá a los siguientes en orden.</p>
+      <p class="text-xs text-slate-500 mb-4">Los equipos titulares están llenos.</p>
       <ul id="listWaitlistPublic" class="space-y-2.5 text-sm"></ul>
     </section>
 
@@ -144,7 +144,7 @@
     </div>
   </div>
 
-  <!-- Firebase SDKs y Lógica -->
+  <!-- Lógica Pública -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getFirestore, doc, getDocs, collection, addDoc, onSnapshot, query, where } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
@@ -177,7 +177,7 @@
     window.registerPlayer = async function(event) {
       event.preventDefault();
       if (!currentEventId) {
-        alert("No hay un partido seleccionado válido.");
+        alert("No hay un partido seleccionado o activo.");
         return;
       }
 
@@ -205,7 +205,7 @@
         document.getElementById('playerForm').reset();
 
         const adminPhone = "56965222597"; 
-        const message = `Hola! Me acabo de inscribir al partido "${currentEventData.title}" (${countCurrentTeam >= maxPerTeam ? 'Lista de Espera' : (team === 'TEAM_A' ? 'Equipo Blanco' : 'Equipo Negro')}). Mi nombre es ${name}. Adjunto mi comprobante de transferencia.`;
+        const message = `Hola! Me acabo de inscribir al partido "${currentEventData.title}". Mi nombre es ${name}. Adjunto mi comprobante de transferencia.`;
         window.open(`https://api.whatsapp.com/send?phone=${adminPhone}&text=${encodeURIComponent(message)}`, '_blank');
 
       } catch (error) {
@@ -364,8 +364,10 @@
       });
     }
 
-    initPublic();
+    document.addEventListener("DOMContentLoaded", () => {
+      initPublic();
+    });
   </script>
 </body>
-  </html>
-  
+      </html>
+      
