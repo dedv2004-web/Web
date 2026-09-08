@@ -45,7 +45,6 @@
       </div>
 
       <form id="eventForm" class="space-y-4">
-        <!-- Campo oculto para saber si estamos editando un evento existente -->
         <input type="hidden" id="currentEventId" value="">
 
         <!-- Detalles del Partido -->
@@ -128,9 +127,7 @@
               <th class="p-3 text-right">Acciones</th>
             </tr>
           </thead>
-          <tbody id="adminPlayerTable" class="divide-y divide-slate-100">
-            <!-- Dinámico -->
-          </tbody>
+          <tbody id="adminPlayerTable" class="divide-y divide-slate-100"></tbody>
         </table>
       </div>
     </section>
@@ -140,7 +137,7 @@
       <h2 class="font-bold text-slate-900 text-lg mb-1 flex items-center">
         <i class="fa-solid fa-hourglass-half text-amber-600 mr-2"></i> Lista de Espera
       </h2>
-      <p class="text-xs text-slate-500 mb-6">Jugadores anotados una vez llenados los cupos titulares. Puedes pasarlos a un equipo si se libera espacio.</p>
+      <p class="text-xs text-slate-500 mb-6">Jugadores anotados una vez llenados los cupos titulares.</p>
 
       <div class="overflow-x-auto">
         <table class="w-full text-left border-collapse text-sm">
@@ -152,16 +149,14 @@
               <th class="p-3 text-right">Acciones</th>
             </tr>
           </thead>
-          <tbody id="adminWaitlistTable" class="divide-y divide-slate-100">
-            <!-- Dinámico -->
-          </tbody>
+          <tbody id="adminWaitlistTable" class="divide-y divide-slate-100"></tbody>
         </table>
       </div>
     </section>
 
   </main>
 
-  <!-- Firebase SDKs y Lógica -->
+  <!-- Lógica Admin -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getFirestore, doc, getDoc, setDoc, collection, getDocs, updateDoc, deleteDoc, addDoc, onSnapshot, query, where } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
@@ -194,20 +189,12 @@
     let unsubscribeWaitlist = null;
 
     window.changePlayerStatus = async function(id, newStatus) {
-      try {
-        await updateDoc(doc(db, "players", id), { status: newStatus });
-      } catch (error) {
-        console.error("Error al cambiar estatus:", error);
-      }
+      try { await updateDoc(doc(db, "players", id), { status: newStatus }); } catch (error) { console.error(error); }
     };
 
     window.deletePlayer = async function(id) {
       if (confirm('¿Deseas eliminar permanentemente a este jugador?')) {
-        try {
-          await deleteDoc(doc(db, "players", id));
-        } catch (error) {
-          console.error("Error al eliminar:", error);
-        }
+        try { await deleteDoc(doc(db, "players", id)); } catch (error) { console.error(error); }
       }
     };
 
@@ -215,9 +202,7 @@
       try {
         await deleteDoc(doc(db, "players", id));
         await addDoc(collection(db, "waitlist"), { name, phone, team, status, eventId });
-      } catch (error) {
-        console.error("Error al mover a espera:", error);
-      }
+      } catch (error) { console.error(error); }
     };
 
     window.promoteToTeam = async function(id, name, phone, status, targetTeam, eventId) {
@@ -233,24 +218,18 @@
         const maxPerTeam = eventDoc.exists() ? (eventDoc.data().playersPerTeam || 5) : 5;
 
         if (countTarget >= maxPerTeam) {
-          alert(`El equipo seleccionado ya está completo (${maxPerTeam}/${maxPerTeam}). Libera un espacio primero.`);
+          alert(`El equipo seleccionado ya está completo (${maxPerTeam}/${maxPerTeam}).`);
           return;
         }
 
         await deleteDoc(doc(db, "waitlist", id));
         await addDoc(collection(db, "players"), { name, phone, team: targetTeam, status, eventId });
-      } catch (error) {
-        console.error("Error al promover:", error);
-      }
+      } catch (error) { console.error(error); }
     };
 
     window.deleteWaitlist = async function(id) {
-      if (confirm('¿Deseas eliminar a este jugador de la lista de espera?')) {
-        try {
-          await deleteDoc(doc(db, "waitlist", id));
-        } catch (error) {
-          console.error("Error al eliminar de espera:", error);
-        }
+      if (confirm('¿Deseas eliminar de la lista de espera?')) {
+        try { await deleteDoc(doc(db, "waitlist", id)); } catch (error) { console.error(error); }
       }
     };
 
@@ -264,7 +243,7 @@
         tbodyPlayers.innerHTML = '';
 
         if (snapshot.empty) {
-          tbodyPlayers.innerHTML = `<tr><td colspan="4" class="p-6 text-center text-slate-400">No hay jugadores titulares inscritos para este partido.</td></tr>`;
+          tbodyPlayers.innerHTML = `<tr><td colspan="4" class="p-6 text-center text-slate-400">No hay jugadores titulares inscritos.</td></tr>`;
           return;
         }
 
@@ -286,7 +265,7 @@
               <td class="p-3">${badge}</td>
               <td class="p-3 text-right">
                 ${actionBtn}
-                <button onclick="moveToWaitlist('${id}', '${p.name.replace(/'/g, "\\'")}', '${p.phone || ''}', '${p.team}', '${p.status}', '${eventId}')" title="Mover a espera" class="bg-amber-100 hover:bg-amber-200 text-amber-800 text-xs font-bold px-2.5 py-1.5 rounded-lg transition mr-1"><i class="fa-solid fa-arrow-down"></i></button>
+                <button onclick="moveToWaitlist('${id}', '${p.name.replace(/'/g, "\\'")}', '${p.phone || ''}', '${p.team}', '${p.status}', '${eventId}')" class="bg-amber-100 hover:bg-amber-200 text-amber-800 text-xs font-bold px-2.5 py-1.5 rounded-lg transition mr-1"><i class="fa-solid fa-arrow-down"></i></button>
                 <button onclick="deletePlayer('${id}')" class="bg-red-50 hover:bg-red-100 text-red-600 p-2 rounded-lg transition"><i class="fa-solid fa-trash"></i></button>
               </td>
             </tr>`;
@@ -341,7 +320,6 @@
         document.getElementById('bankRut').value = ev.bankRut || '';
         document.getElementById('bankHolder').value = ev.bankHolder || '';
       }
-
       listenEventPlayers(eventId);
     }
 
@@ -360,8 +338,8 @@
       document.getElementById('bankHolder').value = '';
       document.getElementById('publicLinkBtn').href = `index.html`;
       
-      document.getElementById('adminPlayerTable').innerHTML = `<tr><td colspan="4" class="p-6 text-center text-slate-400">Estás creando un nuevo partido. Rellena los datos y guarda.</td></tr>`;
-      document.getElementById('adminWaitlistTable').innerHTML = `<tr><td colspan="4" class="p-6 text-center text-slate-400">Estás creando un nuevo partido. Rellena los datos y guarda.</td></tr>`;
+      document.getElementById('adminPlayerTable').innerHTML = `<tr><td colspan="4" class="p-6 text-center text-slate-400">Creando un nuevo partido. Rellena los datos y guarda.</td></tr>`;
+      document.getElementById('adminWaitlistTable').innerHTML = `<tr><td colspan="4" class="p-6 text-center text-slate-400">Creando un nuevo partido. Rellena los datos y guarda.</td></tr>`;
     }
 
     async function initAdmin() {
@@ -375,10 +353,9 @@
         return;
       }
 
-      let firstId = null;
+      let firstId = querySnap.docs[0].id;
       querySnap.forEach((docSnap) => {
         const ev = docSnap.data();
-        if (!firstId) firstId = docSnap.id;
         const option = document.createElement('option');
         option.value = docSnap.id;
         option.textContent = `${ev.title || 'Partido'} (${ev.date || 'Sin fecha'})`;
@@ -388,24 +365,88 @@
       loadEventData(firstId);
     }
 
-    document.getElementById('btnNewEvent').addEventListener('click', function() {
-      clearEventForm();
-      document.getElementById('eventSelector').value = "";
+    document.addEventListener("DOMContentLoaded", () => {
+      initAdmin();
+
+      document.getElementById('btnNewEvent').addEventListener('click', function() {
+        clearEventForm();
+        document.getElementById('eventSelector').value = "";
+      });
+
+      document.getElementById('eventSelector').addEventListener('change', function(e) {
+        if (e.target.value) {
+          loadEventData(e.target.value);
+        }
+      });
+
+      document.getElementById('eventForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        let pTeam = parseInt(document.getElementById('playersPerTeam').value);
+        if (pTeam < 5 || pTeam > 11) {
+          alert('El número de jugadores por equipo debe ser entre 5 y 11.');
+          return;
+        }
+
+        const eventData = {
+          title: document.getElementById('eventTitle').value,
+          location: document.getElementById('eventLocation').value,
+          date: document.getElementById('eventDate').value,
+          price: document.getElementById('eventPrice').value,
+          playersPerTeam: pTeam,
+          bankName: document.getElementById('bankName').value,
+          bankRut: document.getElementById('bankRut').value,
+          bankHolder: document.getElementById('bankHolder').value
+        };
+
+        const currentId = document.getElementById('currentEventId').value;
+
+        try {
+          let savedId = currentId;
+          if (currentId && currentId.trim() !== "") {
+            await setDoc(doc(db, "events", currentId), eventData, { merge: true });
+            alert('¡Evento actualizado con éxito!');
+          } else {
+            const newDocRef = await addDoc(collection(db, "events"), eventData);
+            savedId = newDocRef.id;
+            alert('¡Nuevo evento creado con éxito!');
+          }
+          
+          const eventSelector = document.getElementById('eventSelector');
+          const querySnap = await getDocs(collection(db, "events"));
+          eventSelector.innerHTML = '';
+          querySnap.forEach((docSnap) => {
+            const ev = docSnap.data();
+            const option = document.createElement('option');
+            option.value = docSnap.id;
+            option.textContent = `${ev.title || 'Partido'} (${ev.date || 'Sin fecha'})`;
+            if (docSnap.id === savedId) option.selected = true;
+            eventSelector.appendChild(option);
+          });
+
+          loadEventData(savedId);
+
+        } catch (error) {
+          console.error("Error al guardar evento:", error);
+          alert("Hubo un error al guardar en la base de datos.");
+        }
+      });
+
+      document.getElementById('btnDeleteEvent').addEventListener('click', async function() {
+        const currentId = document.getElementById('currentEventId').value;
+        if (!currentId) {
+          alert("No hay ningún evento seleccionado.");
+          return;
+        }
+
+        if (confirm('¿Estás seguro de eliminar este evento?')) {
+          try {
+            await deleteDoc(doc(db, "events", currentId));
+            alert("Evento eliminado.");
+            initAdmin();
+          } catch (error) { console.error(error); }
+        }
+      });
     });
-
-    document.getElementById('eventSelector').addEventListener('change', function(e) {
-      if (e.target.value) {
-        loadEventData(e.target.value);
-      }
-    });
-
-    document.getElementById('eventForm').addEventListener('submit', async function(e) {
-      e.preventDefault();
-      let pTeam = parseInt(document.getElementById('playersPerTeam').value);
-      if (pTeam < 5 || pTeam > 11) {
-        alert('El número de jugadores por equipo debe ser entre 5 y 11.');
-        return;
-      }
-
-      const eventData = {
-    
+  </script>
+</body>
+</html>
