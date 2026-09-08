@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8">
@@ -178,7 +178,6 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
-    // Control de acceso seguro
     const ADMIN_CODE = "1234";
     let ingresoAutorizado = sessionStorage.getItem('fut7_auth');
     if (ingresoAutorizado !== 'true') {
@@ -194,7 +193,6 @@
     let unsubscribePlayers = null;
     let unsubscribeWaitlist = null;
 
-    // Funciones globales expuestas para las tablas
     window.changePlayerStatus = async function(id, newStatus) {
       try {
         await updateDoc(doc(db, "players", id), { status: newStatus });
@@ -217,7 +215,6 @@
       try {
         await deleteDoc(doc(db, "players", id));
         await addDoc(collection(db, "waitlist"), { name, phone, team, status, eventId });
-        alert(`${name} fue movido a la lista de espera.`);
       } catch (error) {
         console.error("Error al mover a espera:", error);
       }
@@ -242,7 +239,6 @@
 
         await deleteDoc(doc(db, "waitlist", id));
         await addDoc(collection(db, "players"), { name, phone, team: targetTeam, status, eventId });
-        alert(`${name} ahora es titular.`);
       } catch (error) {
         console.error("Error al promover:", error);
       }
@@ -258,12 +254,10 @@
       }
     };
 
-    // Cargar listas de jugadores en tiempo real vinculadas al evento activo
     function listenEventPlayers(eventId) {
       if (unsubscribePlayers) unsubscribePlayers();
       if (unsubscribeWaitlist) unsubscribeWaitlist();
 
-      // Escuchar Titulares del evento
       const qPlayers = query(collection(db, "players"), where("eventId", "==", eventId));
       unsubscribePlayers = onSnapshot(qPlayers, (snapshot) => {
         const tbodyPlayers = document.getElementById('adminPlayerTable');
@@ -299,7 +293,6 @@
         });
       });
 
-      // Escuchar Lista de Espera del evento
       const qWaitlist = query(collection(db, "waitlist"), where("eventId", "==", eventId));
       unsubscribeWaitlist = onSnapshot(qWaitlist, (snapshot) => {
         const tbodyWaitlist = document.getElementById('adminWaitlistTable');
@@ -353,6 +346,9 @@
     }
 
     function clearEventForm() {
+      if (unsubscribePlayers) unsubscribePlayers();
+      if (unsubscribeWaitlist) unsubscribeWaitlist();
+
       document.getElementById('currentEventId').value = '';
       document.getElementById('eventTitle').value = '';
       document.getElementById('eventLocation').value = '';
@@ -362,8 +358,10 @@
       document.getElementById('bankName').value = '';
       document.getElementById('bankRut').value = '';
       document.getElementById('bankHolder').value = '';
-      document.getElementById('adminPlayerTable').innerHTML = `<tr><td colspan="4" class="p-6 text-center text-slate-400">Selecciona o crea un partido.</td></tr>`;
-      document.getElementById('adminWaitlistTable').innerHTML = `<tr><td colspan="4" class="p-6 text-center text-slate-400">Selecciona o crea un partido.</td></tr>`;
+      document.getElementById('publicLinkBtn').href = `index.html`;
+      
+      document.getElementById('adminPlayerTable').innerHTML = `<tr><td colspan="4" class="p-6 text-center text-slate-400">Estás creando un nuevo partido. Rellena los datos y guarda.</td></tr>`;
+      document.getElementById('adminWaitlistTable').innerHTML = `<tr><td colspan="4" class="p-6 text-center text-slate-400">Estás creando un nuevo partido. Rellena los datos y guarda.</td></tr>`;
     }
 
     async function initAdmin() {
@@ -392,7 +390,7 @@
 
     document.getElementById('btnNewEvent').addEventListener('click', function() {
       clearEventForm();
-      alert("Formulario limpio. Ingresa los datos del nuevo partido y haz clic en Guardar.");
+      document.getElementById('eventSelector').value = "";
     });
 
     document.getElementById('eventSelector').addEventListener('change', function(e) {
@@ -404,4 +402,10 @@
     document.getElementById('eventForm').addEventListener('submit', async function(e) {
       e.preventDefault();
       let pTeam = parseInt(document.getElementById('playersPerTeam').value);
-      if (pTeam < 5 || pTe
+      if (pTeam < 5 || pTeam > 11) {
+        alert('El número de jugadores por equipo debe ser entre 5 y 11.');
+        return;
+      }
+
+      const eventData = {
+    
