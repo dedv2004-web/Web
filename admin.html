@@ -1,0 +1,407 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Panel de Administración - Partido</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-slate-100 text-slate-800 font-sans pb-12">
+
+  <!-- Header Admin -->
+  <header class="bg-slate-900 text-white py-6 shadow-lg">
+    <div class="max-w-4xl mx-auto px-4 flex justify-between items-center">
+      <div>
+        <span class="bg-amber-500 text-slate-950 font-extrabold text-xs px-3 py-1 rounded-full uppercase tracking-wider">
+          Panel de Control
+        </span>
+        <h1 class="text-2xl font-black mt-2">⚙️ Administración de Partidos</h1>
+      </div>
+      <div class="flex items-center gap-2">
+        <a id="publicLinkBtn" href="index.html" target="_blank" class="bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold py-2.5 px-4 rounded-xl border border-slate-700 transition">
+          <i class="fa-solid fa-eye mr-1"></i> Ver Página Pública
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-4xl mx-auto px-4 mt-8 space-y-8">
+
+    <!-- Sección 1: Gestión de Eventos y Configuración -->
+    <section class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200">
+      <div class="flex flex-wrap justify-between items-center gap-4 mb-4">
+        <h2 class="font-bold text-slate-900 text-lg flex items-center">
+          <i class="fa-solid fa-calendar-plus text-emerald-600 mr-2"></i> Gestión de Partidos / Eventos
+        </h2>
+        <div class="flex items-center gap-2">
+          <select id="eventSelector" class="px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-sm font-semibold focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+            <option value="">Cargando eventos...</option>
+          </select>
+          <button type="button" id="btnNewEvent" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-xl text-xs transition">
+            <i class="fa-solid fa-plus mr-1"></i> Nuevo Partido
+          </button>
+        </div>
+      </div>
+
+      <form id="eventForm" class="space-y-4">
+        <!-- Campo oculto para saber si estamos editando un evento existente -->
+        <input type="hidden" id="currentEventId" value="">
+
+        <!-- Detalles del Partido -->
+        <div class="grid md:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Nombre del Partido / Título</label>
+            <input type="text" id="eventTitle" required class="w-full px-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none" />
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Cancha / Ubicación</label>
+            <input type="text" id="eventLocation" required class="w-full px-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none" />
+          </div>
+        </div>
+
+        <div class="grid md:grid-cols-3 gap-4">
+          <div>
+            <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Fecha y Hora</label>
+            <input type="text" id="eventDate" required class="w-full px-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none" />
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Cuota por Jugador ($)</label>
+            <input type="text" id="eventPrice" required class="w-full px-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none" />
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Jugadores por Equipo (5 al 11)</label>
+            <input type="number" id="playersPerTeam" min="5" max="11" required class="w-full px-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none" />
+          </div>
+        </div>
+
+        <hr class="border-slate-200 my-4">
+
+        <!-- Datos Bancarios -->
+        <h3 class="font-bold text-slate-900 text-sm flex items-center">
+          <i class="fa-solid fa-university text-emerald-600 mr-2"></i> Datos Bancarios para Transferencias
+        </h3>
+        
+        <div class="grid md:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Banco / Tipo de Cuenta</label>
+            <input type="text" id="bankName" required placeholder="Ej: Prepago Tenpo" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none" />
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-700 uppercase mb-1">RUT</label>
+            <input type="text" id="bankRut" required placeholder="Ej: 26.075.360-6" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none" />
+          </div>
+        </div>
+
+        <div class="grid md:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Titular</label>
+            <input type="text" id="bankHolder" required placeholder="Ej: Daniel Diaz" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none" />
+          </div>
+        </div>
+
+        <div class="flex gap-3 pt-2">
+          <button type="submit" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 px-6 rounded-xl shadow text-sm transition">
+            Guardar / Actualizar Evento
+          </button>
+          <button type="button" id="btnDeleteEvent" class="bg-red-50 hover:bg-red-100 text-red-600 font-bold py-2.5 px-6 rounded-xl border border-red-200 text-sm transition">
+            <i class="fa-solid fa-trash mr-1"></i> Eliminar Evento Actual
+          </button>
+        </div>
+      </form>
+    </section>
+
+    <!-- Sección 2: Gestión de Jugadores Titulares -->
+    <section class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200">
+      <h2 class="font-bold text-slate-900 text-lg mb-1 flex items-center">
+        <i class="fa-solid fa-users text-emerald-600 mr-2"></i> Jugadores Titulares y Validación de Pagos
+      </h2>
+      <p class="text-xs text-slate-500 mb-6">Aprueba los pagos o mueve a la banca/espera a quienes no hayan transferido.</p>
+
+      <div class="overflow-x-auto">
+        <table class="w-full text-left border-collapse text-sm">
+          <thead>
+            <tr class="border-b border-slate-200 text-slate-400 font-semibold text-xs uppercase bg-slate-50">
+              <th class="p-3">Jugador</th>
+              <th class="p-3">Equipo</th>
+              <th class="p-3">Estatus</th>
+              <th class="p-3 text-right">Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="adminPlayerTable" class="divide-y divide-slate-100">
+            <!-- Dinámico -->
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Sección 3: Lista de Espera -->
+    <section class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200">
+      <h2 class="font-bold text-slate-900 text-lg mb-1 flex items-center">
+        <i class="fa-solid fa-hourglass-half text-amber-600 mr-2"></i> Lista de Espera
+      </h2>
+      <p class="text-xs text-slate-500 mb-6">Jugadores anotados una vez llenados los cupos titulares. Puedes pasarlos a un equipo si se libera espacio.</p>
+
+      <div class="overflow-x-auto">
+        <table class="w-full text-left border-collapse text-sm">
+          <thead>
+            <tr class="border-b border-slate-200 text-slate-400 font-semibold text-xs uppercase bg-slate-50">
+              <th class="p-3">Jugador</th>
+              <th class="p-3">Teléfono</th>
+              <th class="p-3">Estatus</th>
+              <th class="p-3 text-right">Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="adminWaitlistTable" class="divide-y divide-slate-100">
+            <!-- Dinámico -->
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Firebase SDKs y Lógica -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getFirestore, doc, getDoc, setDoc, collection, getDocs, updateDoc, deleteDoc, addDoc, onSnapshot, query, where } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyATdJZG517JRuYIFVhj9e5Vm3f6lZ-KsHg",
+      authDomain: "webgame-279cd.firebaseapp.com",
+      projectId: "webgame-279cd",
+      storageBucket: "webgame-279cd.firebasestorage.app",
+      messagingSenderId: "466076593710",
+      appId: "1:466076593710:web:ed7c65db61829614f2f9bf"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    // Control de acceso seguro
+    const ADMIN_CODE = "1234";
+    let ingresoAutorizado = sessionStorage.getItem('fut7_auth');
+    if (ingresoAutorizado !== 'true') {
+      let codigoIngresado = prompt("Ingresa el código de acceso de administración:");
+      if (codigoIngresado === ADMIN_CODE) {
+        sessionStorage.setItem('fut7_auth', 'true');
+      } else {
+        alert("Código incorrecto. Acceso denegado.");
+        window.location.href = "index.html";
+      }
+    }
+
+    let unsubscribePlayers = null;
+    let unsubscribeWaitlist = null;
+
+    // Funciones globales expuestas para las tablas
+    window.changePlayerStatus = async function(id, newStatus) {
+      try {
+        await updateDoc(doc(db, "players", id), { status: newStatus });
+      } catch (error) {
+        console.error("Error al cambiar estatus:", error);
+      }
+    };
+
+    window.deletePlayer = async function(id) {
+      if (confirm('¿Deseas eliminar permanentemente a este jugador?')) {
+        try {
+          await deleteDoc(doc(db, "players", id));
+        } catch (error) {
+          console.error("Error al eliminar:", error);
+        }
+      }
+    };
+
+    window.moveToWaitlist = async function(id, name, phone, team, status, eventId) {
+      try {
+        await deleteDoc(doc(db, "players", id));
+        await addDoc(collection(db, "waitlist"), { name, phone, team, status, eventId });
+        alert(`${name} fue movido a la lista de espera.`);
+      } catch (error) {
+        console.error("Error al mover a espera:", error);
+      }
+    };
+
+    window.promoteToTeam = async function(id, name, phone, status, targetTeam, eventId) {
+      try {
+        const q = query(collection(db, "players"), where("eventId", "==", eventId));
+        const playersSnap = await getDocs(q);
+        let countTarget = 0;
+        playersSnap.forEach(docSnap => {
+          if (docSnap.data().team === targetTeam) countTarget++;
+        });
+
+        const eventDoc = await getDoc(doc(db, "events", eventId));
+        const maxPerTeam = eventDoc.exists() ? (eventDoc.data().playersPerTeam || 5) : 5;
+
+        if (countTarget >= maxPerTeam) {
+          alert(`El equipo seleccionado ya está completo (${maxPerTeam}/${maxPerTeam}). Libera un espacio primero.`);
+          return;
+        }
+
+        await deleteDoc(doc(db, "waitlist", id));
+        await addDoc(collection(db, "players"), { name, phone, team: targetTeam, status, eventId });
+        alert(`${name} ahora es titular.`);
+      } catch (error) {
+        console.error("Error al promover:", error);
+      }
+    };
+
+    window.deleteWaitlist = async function(id) {
+      if (confirm('¿Deseas eliminar a este jugador de la lista de espera?')) {
+        try {
+          await deleteDoc(doc(db, "waitlist", id));
+        } catch (error) {
+          console.error("Error al eliminar de espera:", error);
+        }
+      }
+    };
+
+    // Cargar listas de jugadores en tiempo real vinculadas al evento activo
+    function listenEventPlayers(eventId) {
+      if (unsubscribePlayers) unsubscribePlayers();
+      if (unsubscribeWaitlist) unsubscribeWaitlist();
+
+      // Escuchar Titulares del evento
+      const qPlayers = query(collection(db, "players"), where("eventId", "==", eventId));
+      unsubscribePlayers = onSnapshot(qPlayers, (snapshot) => {
+        const tbodyPlayers = document.getElementById('adminPlayerTable');
+        tbodyPlayers.innerHTML = '';
+
+        if (snapshot.empty) {
+          tbodyPlayers.innerHTML = `<tr><td colspan="4" class="p-6 text-center text-slate-400">No hay jugadores titulares inscritos para este partido.</td></tr>`;
+          return;
+        }
+
+        snapshot.forEach((docSnap) => {
+          const p = docSnap.data();
+          const id = docSnap.id;
+          let badge = p.status === 'confirmed'
+            ? `<span class="bg-emerald-100 text-emerald-800 text-xs font-bold px-2.5 py-1 rounded-md">Confirmado</span>`
+            : `<span class="bg-amber-100 text-amber-800 text-xs font-bold px-2.5 py-1 rounded-md">Pendiente</span>`;
+
+          let actionBtn = p.status === 'pending'
+            ? `<button onclick="changePlayerStatus('${id}', 'confirmed')" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-3 py-1.5 rounded-lg transition mr-1">Aprobar</button>`
+            : `<button onclick="changePlayerStatus('${id}', 'pending')" class="bg-amber-500 hover:bg-amber-600 text-white text-xs font-bold px-3 py-1.5 rounded-lg transition mr-1">Pendiente</button>`;
+
+          tbodyPlayers.innerHTML += `
+            <tr class="hover:bg-slate-50">
+              <td class="p-3 font-medium text-slate-700">${p.name} <br><span class="text-xs text-slate-400">${p.phone || ''}</span></td>
+              <td class="p-3 font-semibold text-slate-600">${p.team === 'TEAM_A' ? 'Equipo Blanco' : 'Equipo Negro'}</td>
+              <td class="p-3">${badge}</td>
+              <td class="p-3 text-right">
+                ${actionBtn}
+                <button onclick="moveToWaitlist('${id}', '${p.name.replace(/'/g, "\\'")}', '${p.phone || ''}', '${p.team}', '${p.status}', '${eventId}')" title="Mover a espera" class="bg-amber-100 hover:bg-amber-200 text-amber-800 text-xs font-bold px-2.5 py-1.5 rounded-lg transition mr-1"><i class="fa-solid fa-arrow-down"></i></button>
+                <button onclick="deletePlayer('${id}')" class="bg-red-50 hover:bg-red-100 text-red-600 p-2 rounded-lg transition"><i class="fa-solid fa-trash"></i></button>
+              </td>
+            </tr>`;
+        });
+      });
+
+      // Escuchar Lista de Espera del evento
+      const qWaitlist = query(collection(db, "waitlist"), where("eventId", "==", eventId));
+      unsubscribeWaitlist = onSnapshot(qWaitlist, (snapshot) => {
+        const tbodyWaitlist = document.getElementById('adminWaitlistTable');
+        tbodyWaitlist.innerHTML = '';
+
+        if (snapshot.empty) {
+          tbodyWaitlist.innerHTML = `<tr><td colspan="4" class="p-6 text-center text-slate-400">No hay jugadores en lista de espera.</td></tr>`;
+          return;
+        }
+
+        snapshot.forEach((docSnap) => {
+          const w = docSnap.data();
+          const id = docSnap.id;
+          let badge = w.status === 'confirmed'
+            ? `<span class="bg-emerald-100 text-emerald-800 text-xs font-bold px-2.5 py-1 rounded-md">Confirmado</span>`
+            : `<span class="bg-amber-100 text-amber-800 text-xs font-bold px-2.5 py-1 rounded-md">Pendiente</span>`;
+
+          tbodyWaitlist.innerHTML += `
+            <tr class="hover:bg-slate-50">
+              <td class="p-3 font-medium text-slate-700">${w.name}</td>
+              <td class="p-3 text-slate-500">${w.phone}</td>
+              <td class="p-3">${badge}</td>
+              <td class="p-3 text-right">
+                <button onclick="promoteToTeam('${id}', '${w.name.replace(/'/g, "\\'")}', '${w.phone}', '${w.status}', 'TEAM_A', '${eventId}')" class="bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold px-2.5 py-1.5 rounded-lg transition mr-1">Al Blanco</button>
+                <button onclick="promoteToTeam('${id}', '${w.name.replace(/'/g, "\\'")}', '${w.phone}', '${w.status}', 'TEAM_B', '${eventId}')" class="bg-slate-800 hover:bg-slate-900 text-white text-xs font-bold px-2.5 py-1.5 rounded-lg transition mr-1">Al Negro</button>
+                <button onclick="deleteWaitlist('${id}')" class="bg-red-50 hover:bg-red-100 text-red-600 p-2 rounded-lg transition"><i class="fa-solid fa-trash"></i></button>
+              </td>
+            </tr>`;
+        });
+      });
+    }
+
+    async function loadEventData(eventId) {
+      document.getElementById('currentEventId').value = eventId;
+      document.getElementById('publicLinkBtn').href = `index.html?id=${eventId}`;
+      
+      const docSnap = await getDoc(doc(db, "events", eventId));
+      if (docSnap.exists()) {
+        const ev = docSnap.data();
+        document.getElementById('eventTitle').value = ev.title || '';
+        document.getElementById('eventLocation').value = ev.location || '';
+        document.getElementById('eventDate').value = ev.date || '';
+        document.getElementById('eventPrice').value = ev.price || '';
+        document.getElementById('playersPerTeam').value = ev.playersPerTeam || 5;
+        document.getElementById('bankName').value = ev.bankName || '';
+        document.getElementById('bankRut').value = ev.bankRut || '';
+        document.getElementById('bankHolder').value = ev.bankHolder || '';
+      }
+
+      listenEventPlayers(eventId);
+    }
+
+    function clearEventForm() {
+      document.getElementById('currentEventId').value = '';
+      document.getElementById('eventTitle').value = '';
+      document.getElementById('eventLocation').value = '';
+      document.getElementById('eventDate').value = '';
+      document.getElementById('eventPrice').value = '';
+      document.getElementById('playersPerTeam').value = 5;
+      document.getElementById('bankName').value = '';
+      document.getElementById('bankRut').value = '';
+      document.getElementById('bankHolder').value = '';
+      document.getElementById('adminPlayerTable').innerHTML = `<tr><td colspan="4" class="p-6 text-center text-slate-400">Selecciona o crea un partido.</td></tr>`;
+      document.getElementById('adminWaitlistTable').innerHTML = `<tr><td colspan="4" class="p-6 text-center text-slate-400">Selecciona o crea un partido.</td></tr>`;
+    }
+
+    async function initAdmin() {
+      const eventSelector = document.getElementById('eventSelector');
+      const querySnap = await getDocs(collection(db, "events"));
+      
+      eventSelector.innerHTML = '';
+      if (querySnap.empty) {
+        eventSelector.innerHTML = `<option value="">No hay eventos creados</option>`;
+        clearEventForm();
+        return;
+      }
+
+      let firstId = null;
+      querySnap.forEach((docSnap) => {
+        const ev = docSnap.data();
+        if (!firstId) firstId = docSnap.id;
+        const option = document.createElement('option');
+        option.value = docSnap.id;
+        option.textContent = `${ev.title || 'Partido'} (${ev.date || 'Sin fecha'})`;
+        eventSelector.appendChild(option);
+      });
+
+      loadEventData(firstId);
+    }
+
+    document.getElementById('btnNewEvent').addEventListener('click', function() {
+      clearEventForm();
+      alert("Formulario limpio. Ingresa los datos del nuevo partido y haz clic en Guardar.");
+    });
+
+    document.getElementById('eventSelector').addEventListener('change', function(e) {
+      if (e.target.value) {
+        loadEventData(e.target.value);
+      }
+    });
+
+    document.getElementById('eventForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      let pTeam = parseInt(document.getElementById('playersPerTeam').value);
+      if (pTeam < 5 || pTe
