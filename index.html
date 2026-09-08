@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8">
@@ -147,7 +147,7 @@
   <!-- Firebase SDKs y Lógica -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getFirestore, doc, getDocs, collection, addDoc, onSnapshot, query, where, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    import { getFirestore, doc, getDocs, collection, addDoc, onSnapshot, query, where } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyATdJZG517JRuYIFVhj9e5Vm3f6lZ-KsHg", 
@@ -231,7 +231,6 @@
       let countB = 0;
       let totalConfirmed = 0;
 
-      // Equipo Blanco
       const teamAPlayers = players.filter(p => p.team === 'TEAM_A');
       teamAPlayers.forEach((p, index) => {
         if (p.status === 'confirmed') totalConfirmed++;
@@ -256,7 +255,6 @@
           </li>`;
       }
 
-      // Equipo Negro
       const teamBPlayers = players.filter(p => p.team === 'TEAM_B');
       teamBPlayers.forEach((p, index) => {
         if (p.status === 'confirmed') totalConfirmed++;
@@ -281,7 +279,6 @@
           </li>`;
       }
 
-      // Lista de Espera Pública
       if (waitlist.length > 0) {
         waitlistContainer.classList.remove('hidden');
         waitlist.forEach((w, index) => {
@@ -311,7 +308,6 @@
       const urlParams = new URLSearchParams(window.location.search);
       let eventId = urlParams.get('id');
 
-      // Si no pasan ID en la URL, buscamos el primer evento disponible automáticamente
       if (!eventId) {
         const querySnap = await getDocs(collection(db, "events"));
         if (!querySnap.empty) {
@@ -325,7 +321,6 @@
 
       currentEventId = eventId;
 
-      // Escuchar Configuración del Evento
       onSnapshot(doc(db, "events", eventId), (docSnap) => {
         if (docSnap.exists()) {
           currentEventData = docSnap.data();
@@ -351,7 +346,6 @@
         document.getElementById('progressSubtitle').innerText = `Se requiere el pago verificado de los ${totalMaxPlayers} jugadores titulares para cerrar la cancha.`;
       });
 
-      // Escuchar Jugadores y Lista de Espera filtrados por este evento
       let playersData = [];
       let waitlistData = [];
 
@@ -373,5 +367,5 @@
     initPublic();
   </script>
 </body>
-</html>
-
+  </html>
+  
